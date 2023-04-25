@@ -15,33 +15,17 @@ export default class SeachApiService {
 
   async fetchHits(searchQuery) {
     const response = await axios.get(
-      `${URL}/?key=${API_KEY}&q=${searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`
+      `${URL}/?key=${API_KEY}&q=${searchQuery}
+      &image_type=${this.imageType}
+      &orientation=${this.orientation}
+      &safesearch=${this.safesearch}
+      &per_page=${this.perPage}&page=${this.page}`
     );
 
-    // this.totalHits = data.totalHits;
     this.incrementPage();
 
-    return response.data.hits;
+    return response.data;
   }
-
-
-  //  fetchHeats() {
-  //   return fetch(
-  //       `${URL}?key=${API_KEY}&q=${this.seachQuery}&page=${this.page}&per_page=${this.perPage}&image_type=${this.imageType}&orientation=${this.orientation}&safesearch=${this.safesearch}`
-  //     )
-  //     .then(response => {
-  //       if (!response.ok) {
-  //         throw new Error(response.status);
-  //       }
-  //       return response.json();
-  //     })
-  //     .then(data => {
-  //       this.incrementPage();
-  //       this.totalHits = data.totalHits;
-  //       return data.hits;
-  //     });
-
-  // }
 
   incrementPage() {
     this.page += 1;

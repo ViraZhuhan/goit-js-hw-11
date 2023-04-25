@@ -16,93 +16,97 @@ const refs = {
 };
 
 const seachApiService = new SeachApiService();
+
 const simpleLightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionPosition: 'bottom',
   captionDelay: 250,
+  animationSpeed: 100,
 });
 const loadMoreBtn = new LoadMoreBtn({
   selector: '[data-action="load-more"]',
   hidden: true,
 });
 
+let searchQuery = '';
+
 refs.seachForm.addEventListener('submit', onSeach);
 loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
 
-function onSeach(e) {
+async function onSeach(e) {
   e.preventDefault();
 
   seachApiService.query = e.currentTarget.elements.searchQuery.value.trim();
+  searchQuery = seachApiService.query;
 
-  seachApiService.resetPage();
-  loadMoreBtn.show();
-  loadMoreBtn.disable();
+  try {
+    const { totalHits, hits, perPage } = await seachApiService.fetchHits(
+      searchQuery
+    );
 
-  
-  onFetchHits();
+    if (seachApiService.query === '') {
+      loadMoreBtn.hide();
+      onFetchError();
+      return;
+    }
+
+    if (totalHits === 0) {
+      loadMoreBtn.hide();
+      noSeachError();
+      return;
+    }
+
+    seachApiService.resetPage();
+    createGallery(hits);
+    totalImagesFound(totalHits);
+    loadMoreBtn.show();
+    loadMoreBtn.enable();
+    simpleLightbox.refresh();
+  } catch (error) {
+    onFetchError();
+    clearGallery();
+  }
 }
 
-async function onFetchHits() {
+async function onLoadMore() {
+  loadMoreBtn.disable();
   try {
-    const hits = await seachApiService.fetchHits(seachApiService.query)
-    console.log(seachApiService.query)
+    const { page, perPage, totalHits, hits } = await seachApiService.fetchHits(
+      searchQuery
+    );
+
+    if (page * perPage > totalHits) {
+      reachedEndImages();
+      loadMoreBtn.hide();
+      return;
+    }
+
     createGallery(hits);
     simpleLightbox.refresh();
     loadMoreBtn.enable();
+    slowScroll();
   } catch (error) {
-     onFetchError();
-        clearGallery();
-  }
-  }
-
-
-// function onFetchHits() {
-//   seachApiService
-//     .fetchHeats()
-//     .then(hits => {
-//       createGallery(hits);
-//       simpleLightbox.refresh();
-//       loadMoreBtn.enable();
-//     })
-//     .catch(error => {
-//       onFetchError();
-//       clearGallery();
-//     });
-// }
-
-function onLoadMore() {
-  loadMoreBtn.disable();
-  if (
-    seachApiService.page * seachApiService.perPage >
-    seachApiService.totalHits
-  ) {
     reachedEndImages();
     loadMoreBtn.hide();
   }
-  onFetchHits();
 }
 
 function createGallery(hits) {
-  if (seachApiService.query === '') {
-    loadMoreBtn.hide();
-    onFetchError();
-    return;
-  }
-
-  if (seachApiService.totalHits === 0) {
-    loadMoreBtn.hide();
-    noSeachError();
-    return;
-  } 
-  
-  else {
-    // clearGallery();
-    loadMoreBtn.enable();
-    totalImagesFound(seachApiService.totalHits);
-    return refs.gallery.insertAdjacentHTML('beforeend', hitsTpl(hits));
-  }
+  clearGallery();
+  refs.gallery.insertAdjacentHTML('beforeend', hitsTpl(hits));
 }
 
 function clearGallery() {
   refs.gallery.innerHTML = '';
+}
+
+function slowScroll() {
+  const galleryElement = document.querySelector('.gallery').firstElementChild;
+  if (galleryElement) {
+    const { height: cardHeight } = galleryElement.getBoundingClientRect();
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
+  }
 }
