@@ -13,43 +13,35 @@ export default class SeachApiService {
     this.totalHits = 0;
   }
 
-  // async fetchHits() {
-  //   const {data} = await axios.get(
-  //     `${URL}/?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`
-  //   );
+  async fetchHits(searchQuery) {
+    const response = await axios.get(
+      `${URL}/?key=${API_KEY}&q=${searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`
+    );
 
-  //   this.totalHits = data.totalHits;
-  //   this.incrementPage();
+    // this.totalHits = data.totalHits;
+    this.incrementPage();
 
-  //   console.log(this.searchQuery)
-  //   return data;
-  // }
-
-  // async fetchHeats() {
-  //   const url = `${URL}/?key=${API_KEY}&q=${this.searchQuery}&language=en&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`;
-
-  //   const response = await axios.get(url);
-  //   return response.data;
-  // }
-
-
-
-   fetchHeats() {
-    return fetch(
-        `${URL}?key=${API_KEY}&q=${this.seachQuery}&page=${this.page}&per_page=${this.perPage}&image_type=${this.imageType}&orientation=${this.orientation}&safesearch=${this.safesearch}`
-      )
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(response.status);
-        }
-        return response.json();
-      })
-      .then(data => {
-        this.incrementPage();
-        this.totalHits = data.totalHits;
-        return data.hits;
-      });
+    return response.data.hits;
   }
+
+
+  //  fetchHeats() {
+  //   return fetch(
+  //       `${URL}?key=${API_KEY}&q=${this.seachQuery}&page=${this.page}&per_page=${this.perPage}&image_type=${this.imageType}&orientation=${this.orientation}&safesearch=${this.safesearch}`
+  //     )
+  //     .then(response => {
+  //       if (!response.ok) {
+  //         throw new Error(response.status);
+  //       }
+  //       return response.json();
+  //     })
+  //     .then(data => {
+  //       this.incrementPage();
+  //       this.totalHits = data.totalHits;
+  //       return data.hits;
+  //     });
+
+  // }
 
   incrementPage() {
     this.page += 1;

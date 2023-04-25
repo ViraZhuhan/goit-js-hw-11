@@ -37,8 +37,38 @@ function onSeach(e) {
   seachApiService.resetPage();
   loadMoreBtn.show();
   loadMoreBtn.disable();
+
+  
   onFetchHits();
 }
+
+async function onFetchHits() {
+  try {
+    const hits = await seachApiService.fetchHits(seachApiService.query)
+    console.log(seachApiService.query)
+    createGallery(hits);
+    simpleLightbox.refresh();
+    loadMoreBtn.enable();
+  } catch (error) {
+     onFetchError();
+        clearGallery();
+  }
+  }
+
+
+// function onFetchHits() {
+//   seachApiService
+//     .fetchHeats()
+//     .then(hits => {
+//       createGallery(hits);
+//       simpleLightbox.refresh();
+//       loadMoreBtn.enable();
+//     })
+//     .catch(error => {
+//       onFetchError();
+//       clearGallery();
+//     });
+// }
 
 function onLoadMore() {
   loadMoreBtn.disable();
@@ -51,34 +81,6 @@ function onLoadMore() {
   }
   onFetchHits();
 }
-
-function onFetchHits() {
-  
-  seachApiService
-    .fetchHeats()
-    .then(hits => {
-      createGallery(hits);
-      simpleLightbox.refresh();
-      loadMoreBtn.enable();
-    })
-    .catch(error => {
-      onFetchError();
-      clearGallery();
-    });
-}
-
-// async function onFetchHits() {
-//   try {
-//     const hits = await seachApiService.fetchHits()
-//     createGallery(hits);
-//     simpleLightbox.refresh();
-//     loadMoreBtn.enable();
-//   } catch (error) {
-//      onFetchError();
-//         clearGallery();
-//   }
-//   }
-
 
 function createGallery(hits) {
   if (seachApiService.query === '') {
@@ -94,7 +96,7 @@ function createGallery(hits) {
   } 
   
   else {
-    clearGallery();
+    // clearGallery();
     loadMoreBtn.enable();
     totalImagesFound(seachApiService.totalHits);
     return refs.gallery.insertAdjacentHTML('beforeend', hitsTpl(hits));
