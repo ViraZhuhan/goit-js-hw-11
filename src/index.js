@@ -3,7 +3,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import SeachApiService from './js/seach-service';
 import hitsTpl from './templates/hits.hbs';
 import LoadMoreBtn from './js/load-more-btn';
-import TopBtn from './js/top-btn'
+import TopBtn from './js/top-btn';
 import {
   noSeachError,
   onFetchError,
@@ -24,6 +24,7 @@ const simpleLightbox = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
   animationSpeed: 100,
 });
+
 const loadMoreBtn = new LoadMoreBtn({
   selector: '[data-action="load-more"]',
   hidden: true,
@@ -111,12 +112,12 @@ function clearGallery() {
 }
 
 function slowScroll() {
-const galleryElement = document.querySelector('.gallery').firstElementChild;
+  const galleryElement = document.querySelector('.gallery').firstElementChild;
   if (galleryElement) {
-  window.scrollTo({
-    top: 0,
-    left: 0,
-    behavior: 'smooth'
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
     });
   }
 }
