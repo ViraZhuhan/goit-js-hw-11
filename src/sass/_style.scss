@@ -103,8 +103,20 @@ img {
   border-radius: 10px;
 }
 
+.wrap-btn {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-direction: column;
+
+  margin-top: 20px;
+  margin-top: 20px;
+}
+
 button {
   padding: 10px 10px;
+
+  width: 100px;
 
   background-color: rgb(247, 204, 124);
   border: none;
@@ -117,14 +129,12 @@ button {
   }
 }
 
-.load-more {
+.load-more, .top {
   display: block;
-
   margin: 0 auto;
-  margin-top: 20px;
-  margin-bottom: 20px;
 }
 
-.load-more.is-hidden {
+.load-more.is-hidden,
+.top.is-hidden {
   display: none;
 }

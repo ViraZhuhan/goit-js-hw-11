@@ -3,6 +3,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import SeachApiService from './js/seach-service';
 import hitsTpl from './templates/hits.hbs';
 import LoadMoreBtn from './js/load-more-btn';
+import TopBtn from './js/top-btn'
 import {
   noSeachError,
   onFetchError,
@@ -28,10 +29,16 @@ const loadMoreBtn = new LoadMoreBtn({
   hidden: true,
 });
 
+const topBtn = new TopBtn({
+  selector: '[data-action="top"]',
+  hidden: true,
+});
+
 let searchQuery = '';
 
 refs.seachForm.addEventListener('submit', onSeach);
 loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
+topBtn.refs.button.addEventListener('click', slowScroll);
 
 async function onSeach(e) {
   e.preventDefault();
@@ -46,12 +53,14 @@ async function onSeach(e) {
 
     if (seachApiService.query === '') {
       loadMoreBtn.hide();
+      topBtn.hide();
       onFetchError();
       return;
     }
 
     if (totalHits === 0) {
       loadMoreBtn.hide();
+      topBtn.hide();
       noSeachError();
       return;
     }
@@ -60,6 +69,7 @@ async function onSeach(e) {
     createGallery(hits);
     totalImagesFound(totalHits);
     loadMoreBtn.show();
+    topBtn.show();
     loadMoreBtn.enable();
     simpleLightbox.refresh();
   } catch (error) {
@@ -70,6 +80,7 @@ async function onSeach(e) {
 
 async function onLoadMore() {
   loadMoreBtn.disable();
+
   try {
     const { page, perPage, totalHits, hits } = await seachApiService.fetchHits(
       searchQuery
@@ -84,7 +95,6 @@ async function onLoadMore() {
     createGallery(hits);
     simpleLightbox.refresh();
     loadMoreBtn.enable();
-    slowScroll();
   } catch (error) {
     reachedEndImages();
     loadMoreBtn.hide();
@@ -101,12 +111,12 @@ function clearGallery() {
 }
 
 function slowScroll() {
-  const galleryElement = document.querySelector('.gallery').firstElementChild;
+const galleryElement = document.querySelector('.gallery').firstElementChild;
   if (galleryElement) {
-    const { height: cardHeight } = galleryElement.getBoundingClientRect();
-    window.scrollBy({
-      top: cardHeight * 2,
-      behavior: 'smooth',
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth'
     });
   }
 }
